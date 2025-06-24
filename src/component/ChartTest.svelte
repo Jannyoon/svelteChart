@@ -30,6 +30,13 @@
 
 </script>
 
-
+<style>
+  
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 
 <canvas bind:this={canvasEl} ></canvas>
