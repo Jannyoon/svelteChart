@@ -34,6 +34,9 @@
       }
 
     },
+    //부모 width 기준으로 자동 scaling
+    //높이 비율을 본인 것으로 그대로 유지하고 싶다면 아래는 주석처리
+    maintainAspectRatio: false,
     responsive: true,
     plugins: {
       legend: {
@@ -46,8 +49,9 @@
 
 <style>
   .main {
-    width: 100%;
-    height: 100dvh;
+    width: 200px;
+    height: 400px;
+    position: relative;
   }
 </style>
 

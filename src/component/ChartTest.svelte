@@ -27,6 +27,9 @@
       options
     });
   })
+
 </script>
+
+
 
 <canvas bind:this={canvasEl} ></canvas>
