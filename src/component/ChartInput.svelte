@@ -1,34 +1,31 @@
 <script lang="ts">
-  import ChartTest from "../component/ChartTest.svelte";
+	import { onMount } from "svelte";
+  import { type ChartData, type ChartOptions, type ChartConfiguration, Chart, registerables, } from 'chart.js'
 
   //폼 바인딩용
   const {labels, values} = $props()
+  let a = $state(null)
+  let b = $state(null)
 
-
-  const data = {
+  /* chart 초기 세팅 */
+  const type = 'bar'
+  const data = $state({
     labels,
     datasets: [{
       label: "Votes",
       data: values,
-      backgroundColor: [
+      backgroundColor: 
+      [
         'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)'
+        'rgba(54, 162, 235, 0.2)',        
       ],
       borderColor: [
         'rgba(255,99,132,1)',
         'rgba(54,162,235,1)',
-        'rgba(255,206,86,1)',
-        'rgba(75,192,192,1)',
-        'rgba(153,102,255,1)',
-        'rgba(255,159,64,1)'
       ],
       borderWidth: 1
     }]
-  }
+  })
 
   const options = {
     scales: {
@@ -48,13 +45,44 @@
     }
   }
 
-  $effect(()=>{
-    console.log('들어오고 있는 데이터', labels, values)
+  const updateMode = 'default'
+  let chart: Chart | null = null;
+  let canvasRef: HTMLCanvasElement;
+  onMount(()=>{
+    const ctx = canvasRef.getContext('2d');
+    if (!ctx) return;
+    Chart.register(...registerables); //꼭 필요함
+
+    if (canvasRef){
+      chart = new Chart(ctx, {
+        type,
+        data: $state.snapshot(data),
+        options
+      });
+    }
   })
+
+
+  $effect(()=>{
+    data.labels = labels
+    data.datasets[0].data = values.map((v:string)=>+v)
+  })
+
+  $effect(()=>{
+    if (chart){
+      chart.data = $state.snapshot(data)
+      chart?.update(updateMode)      
+    }
+  })
+
 </script>
+<style>
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 
 
-
-
-<ChartTest {data} {options} type="bar"/>
-
+<canvas bind:this={canvasRef} ></canvas>
