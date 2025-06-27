@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount } from "svelte";
-  import { type ChartData, type ChartOptions, type ChartConfiguration, Chart, registerables, } from 'chart.js'
-	import type { propsType } from "../../domain/stackChart";
+  import { Chart, registerables, } from 'chart.js'
+  import ChartDataLabels from 'chartjs-plugin-datalabels'
+	import type { propsType } from "../../domain/stackChart"
 
   //폼 바인딩용
   const {chartData, columnTotal} = $props()
@@ -68,7 +69,7 @@
   onMount(()=>{
     const ctx = canvasRef.getContext('2d');
     if (!ctx) return;
-    Chart.register(...registerables); //꼭 필요함
+    Chart.register(...registerables, ChartDataLabels); //꼭 필요함
 
     if (canvasRef){
       chart = new Chart(ctx, {
