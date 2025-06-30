@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { toPercentage } from "chart.js/helpers";
     import StackChart from "../../component/stackChart/stackChart.svelte"
 	import type { propsType } from "../../domain/stackChart";
 

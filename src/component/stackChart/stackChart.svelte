@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { onMount } from "svelte";
   import { Chart, registerables, } from 'chart.js'
-  import ChartDataLabels, { type Context } from 'chartjs-plugin-datalabels'
+  import ChartDataLabels from 'chartjs-plugin-datalabels'
 	import type { propsType } from "../../domain/stackChart"
-	import { toPadding } from "chart.js/helpers";
-  
+
 
   //폼 바인딩용
   const {chartData, columnTotal} = $props()
@@ -12,18 +11,22 @@
   
   /* Config - chart 초기 세팅 */
   const type = 'bar'
-  const data = $state({
+
+  //데이터를 양방향 바인딩하게 된다면 data가 아닌 prop으로 오는 chartData를 binding하게 될 것.
+  const data = $derived({ 
     labels: chartData[0].key,
     datasets: chartData.map((item:propsType, idx:number) => {
     return {
       label: "Votes",
       data: item.value.map((val, i)=>val*100/columnTotal[i]),
-        backgroundColor: item.backgroundColor,
-        borderColor: item.backgroundColor,
-        borderWidth: 1
+      backgroundColor: item.backgroundColor,
+      borderColor: item.backgroundColor,
+      borderWidth: 1
     }
    })
   })
+
+
 
   const options = {
     plugins: {
@@ -38,7 +41,7 @@
       },
       legend: {
         display: true,
-        position: 'top' as const,
+        position: 'bottom' as const,
         padding: {
           top: 10,
           bottom: 10
@@ -48,28 +51,28 @@
         enabled: false
       },
       animation: { // 차트 애니메이션 사용 안 함 (옵션)
-          duration: 0,
-        },
-        datalabels: { // datalables 플러그인 세팅
-          anchor: 'end' as const, //막대의 끝 기준
-          //clamp: true, //차트 영역 자른다고? 뭔소리여
-          align: 'center' as const,  //위쪽에 표시
-          offset: 0, // 간격 0으로 표기
-          formatter: function (value: number, context:any) {
-            var idx = context.dataIndex; // 각 데이터 인덱스 dataIndex: The index of the associated data
+        duration: 0,
+      },
+      datalabels: { // datalables 플러그인 세팅
+        anchor: 'end' as const, //막대의 끝 기준
+        //clamp: true, //차트 영역 자른다고? 뭔소리여
+        align: 'center' as const,  //위쪽에 표시
+        offset: 0, // 간격 0으로 표기
+        formatter: function (value: number, context:any) {
+          var idx = context.dataIndex; // 각 데이터 인덱스 dataIndex: The index of the associated data
 
-            // 출력 텍스트
-            return context.chart.data.labels[idx] + value.toFixed(3) + '%';
-          },
-          font: { // font 설정
-          	weight: 'bold' as 'bold',
-            size: 12,
-          },
-          /* css가 그대로 적용된다고 생각하라*/
-          color: '#222', // font color
-          backgroundColor: '#fff',
-          borderWidth: 1,
-          borderRadius: 4
+          // 출력 텍스트
+          return context.chart.data.labels[idx] + value.toFixed(3) + '%';
+        },
+        font: { // font 설정
+          weight: 'bold' as 'bold',
+          size: 12,
+        },
+        /* css가 그대로 적용된다고 생각하라*/
+        color: '#222', // font color
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderRadius: 4
       },
     },
     //부모 width 기준으로 자동 scaling
@@ -120,19 +123,8 @@
   })
 
 
-  $effect(()=>{
-    data.labels = chartData[0].key,
-    data.datasets = chartData.map((item:propsType, idx:number) => {
-    return {
-      label: "Votes",
-      data: item.value.map((val, i)=>val*100/columnTotal[i]),
-      backgroundColor: item.backgroundColor,
-      borderColor: item.backgroundColor,
-      borderWidth: 1
-    }
-   })
-  })
 
+  // 데이터를 chart에 넣고 update까지 시키라는 함수
   $effect(()=>{
     if (chart){
       chart.data = $state.snapshot(data)
